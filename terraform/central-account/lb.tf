@@ -21,16 +21,10 @@ resource "aws_lb_target_group" "consoleme-servers" {
   vpc_id   = module.network.vpc_id
 }
 
-resource "aws_lb_target_group_attachment" "test" {
-  target_group_arn = aws_lb_target_group.consoleme-servers.arn
-  target_id        = module.server.id[0]
-  port             = 8081
-}
-
 
 // Unauthenticated routes are used for the challenge authentication and credential retrieval flows on the command line.
 resource "aws_lb_listener_rule" "unauthenticated-routes-1" {
-  listener_arn = aws_lb_listener.public-8081.arn
+  listener_arn = var.lb-authentication-enabled ? aws_lb_listener.public-8081[0].arn : aws_lb_listener.public-8081-http-no-oidc[0].arn
   priority     = 1
 
   action {
@@ -47,7 +41,7 @@ resource "aws_lb_listener_rule" "unauthenticated-routes-1" {
 }
 
 resource "aws_lb_listener_rule" "unauthenticated-routes-2" {
-  listener_arn = aws_lb_listener.public-8081.arn
+  listener_arn = var.lb-authentication-enabled ? aws_lb_listener.public-8081[0].arn : aws_lb_listener.public-8081-http-no-oidc[0].arn
   priority     = 2
 
   action {
@@ -62,7 +56,21 @@ resource "aws_lb_listener_rule" "unauthenticated-routes-2" {
   }
 }
 
+# replace the following load listener
+resource "aws_lb_listener" "public-8081-http-no-oidc" {
+  count = var.lb-authentication-enabled ? 0 : 1
+  load_balancer_arn = aws_lb.public-to-private-lb.arn
+  port              = var.lb_port
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.consoleme-servers.arn
+  }
+}
+
 resource "aws_lb_listener" "public-8081" {
+  count = var.lb-authentication-enabled ? 1 : 0
   load_balancer_arn = aws_lb.public-to-private-lb.arn
   port              = var.lb_port
   protocol          = "HTTPS"

@@ -12,8 +12,8 @@ module "server" {
     bucket                  = aws_s3_bucket.consoleme_files_bucket.bucket
     current_account_id      = data.aws_caller_identity.current.account_id
     region                  = data.aws_region.current.name
-    CONFIG_LOCATION         = "/apps/consoleme/example_config/example_config_terraform.yaml"
-    CONSOLEME_CONFIG_S3     = format("s3://%s/%s", aws_s3_bucket.consoleme_files_bucket.id, aws_s3_bucket_object.consoleme_config.id)
+    CONFIG_LOCATION         = "/apps/consoleme/config.yaml"
+    CONSOLEME_CONFIG_S3     = "s3://consoleme.remitly.com-wrga/config.yaml"
     custom_user_data_script = var.custom_user_data_script
     consoleme_repo          = var.consoleme_repo
   }))

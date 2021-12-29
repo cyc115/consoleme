@@ -117,6 +117,7 @@ StartLimitIntervalSec=0
 [Service]
 Environment=EC2_REGION=${region}
 Environment=CONFIG_LOCATION=${CONFIG_LOCATION}
+Environment=CONSOLEME_CONFIG_S3=${CONSOLEME_CONFIG_S3}
 WorkingDirectory=/apps/consoleme
 Type=simple
 Restart=always
@@ -143,6 +144,7 @@ Restart=always
 RestartSec=1
 WorkingDirectory=/apps/consoleme
 Environment=CONFIG_LOCATION=${CONFIG_LOCATION}
+Environment=CONSOLEME_CONFIG_S3=${CONSOLEME_CONFIG_S3}
 Environment=EC2_REGION=${region}
 ExecStart=/usr/bin/env /apps/consoleme/env/bin/python3.8 /apps/consoleme/env/bin/celery -A consoleme.celery_tasks.celery_tasks worker -l DEBUG -B -E --concurrency=15
 
@@ -171,6 +173,7 @@ chown consoleme:consoleme /home/consoleme/
 
 cat << EOF >> /home/consoleme/.bashrc
 export CONFIG_LOCATION=${CONFIG_LOCATION}
+Environment=CONSOLEME_CONFIG_S3=${CONSOLEME_CONFIG_S3}
 export EC2_REGION=${region}
 EOF
 

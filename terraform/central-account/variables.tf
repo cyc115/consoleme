@@ -177,6 +177,12 @@ variable "bucket_name_prefix" {
   type        = string
 }
 
+variable "lb-authentication-enabled" {
+  description = "Set to true to enable OIDC auth on ALB"
+  type = bool
+  default     = false
+}
+
 # Other security-related aspects
 variable "lb-certificate-arn" {
   description = "The certificate the load balancer will use (as it terminates HTTPS). If not provided, a self-signed certificate will be used."
